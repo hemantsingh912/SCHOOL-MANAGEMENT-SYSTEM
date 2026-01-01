@@ -1,0 +1,761 @@
+#include<iostream.h>
+#include<conio.h>
+#include<string.h>
+#include<fstream.h>
+#include<dos.h>
+#include<stdio.h>
+#include "tc.cpp"
+
+class admis
+{
+      long int Rollno,tcno;
+      char phone_no[100],Aadhaar[100];
+      char name[100],Fname[100],mname[100],dob[100],address[100],email[100];
+      char bg[100],gender[100];
+      char category[100],section;
+      int SRno,clas;
+      char username[50];
+char password[50];
+
+
+public:
+int validEmail(char email[])
+{
+    int at=-1, dot=-1;
+    for(int i=0; email[i]!='\0'; i++)
+    {
+	if(email[i]=='@')
+		at=i;
+	if(email[i]=='.')
+		dot=i;
+    }
+    return (at!=-1 && dot!=-1 && at<dot);
+}
+
+
+
+int getRoll(int clas, char section)
+{
+    ifstream fin("student.txt");
+    admis s;
+    long maxRoll = 1000;   // first roll will be 1001
+    char line[400];
+
+    if(!fin)
+        return 1001;
+
+    while(fin.getline(line, 400))
+    {
+        sscanf(line,
+        "%ld|%d| %c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]",
+        &s.SRno,
+        &s.clas,
+        &s.section,
+        &s.Rollno,
+        s.name,
+        s.Fname,
+        s.mname,
+        s.dob,
+        s.phone_no,
+        s.Aadhaar,
+        s.gender,
+        s.category,
+        s.email,
+        s.address,
+        s.bg,
+        s.username,
+        s.password
+        );
+
+        if(s.clas == clas && s.section == section)
+        {
+            if(s.Rollno > maxRoll)
+                maxRoll = s.Rollno;
+        }
+    }
+    fin.close();
+
+    return maxRoll + 1;
+}
+
+
+
+int getSR()
+{
+    ifstream fin("student.txt");
+    admis s;
+    int maxSR = 0;
+    char line[400];
+
+    if(!fin)
+        return 1;
+
+    while(fin.getline(line, 400))
+    {
+        sscanf(line, "%d|%d|%c|%d",
+               &s.SRno, &s.clas, &s.section, &s.Rollno);
+
+        if(s.SRno > maxSR)
+	    maxSR = s.SRno;
+    }
+    fin.close();
+    return maxSR + 1;
+}
+
+//check aadhar
+int checkaadhaar( char *add)
+{
+    ifstream fin("student.txt");
+    if(!fin)
+    {
+        cout<<"File not Open";
+        getch();
+        return 0;
+    }
+
+    admis s;
+    char line[500];
+
+    while(fin.getline(line, 500))
+    {
+        if(strlen(line) == 0)   // blank line skip
+	    continue;
+
+        int cnt = sscanf(line,
+        "%ld|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]",
+        &s.SRno,
+	&s.clas,
+        &s.section,
+        &s.Rollno,
+        s.name,
+        s.Fname,
+        s.mname,
+        s.dob,
+        s.phone_no,
+        s.Aadhaar,
+        s.gender,
+        s.category,
+        s.email,
+        s.address,
+        s.bg,
+        s.username,
+        s.password
+        );
+
+        if(cnt == 17 &&strcmp(s.Aadhaar, add) == 0)
+        {
+            fin.close();
+            return 1;   
+        }
+    }
+
+    fin.close();
+    return 0;   
+}
+
+// Student.txt me username, password check
+int checkStudentUser(char *user, char *pass)
+{
+    ifstream fin("student.txt");
+    if(!fin)
+    {
+        cout<<"File not Open";
+        getch();
+        return 0;
+    }
+
+    admis s;
+    char line[500];
+
+    while(fin.getline(line, 500))
+    {
+        if(strlen(line) == 0)   // blank line skip
+	    continue;
+
+        int cnt = sscanf(line,
+        "%ld|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]",
+        &s.SRno,
+        &s.clas,
+        &s.section,
+        &s.Rollno,
+        s.name,
+        s.Fname,
+        s.mname,
+        s.dob,
+        s.phone_no,
+        s.Aadhaar,
+        s.gender,
+        s.category,
+        s.email,
+        s.address,
+        s.bg,
+        s.username,
+        s.password
+        );
+
+        if(cnt == 17 &&
+           strcmp(s.username, user) == 0 &&
+           strcmp(s.password, pass) == 0)
+        {
+            fin.close();
+            return 1;   
+        }
+    }
+
+    fin.close();
+    return 0;   
+}
+
+
+
+
+int checkTCRequestUser(char *user, char *pass)
+{
+    ifstream fin("tcrequest.txt");
+    if(!fin)
+    { 
+        cout<<"File not Open";
+         getch();
+        return 0;
+    }
+    char line[500];
+    admis t;   // ya jo bhi structure use kar rahe ho
+
+    while(fin.getline(line,500))
+    {
+        int cnt = sscanf(line,
+        "%ld|%d|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%s",
+        &t.tcno,
+        &t.SRno,
+        &t.clas,
+        &t.section,
+        &t.Rollno,
+        t.name,
+        t.Fname,
+        t.mname,
+        t.dob,
+        t.phone_no,
+        t.Aadhaar,
+        t.gender,
+        t.category,
+        t.email,
+        t.address,
+        t.bg,
+        t.username,
+        t.password
+        );
+
+        if(cnt == 18)
+        {
+            if(strcmp(t.username,user)==0 &&
+               strcmp(t.password,pass)==0)
+            {
+                fin.close();
+                return 1;   // FOUND
+            }
+        }
+    }
+    fin.close();
+    return 0;
+}
+
+
+
+//TC view ma username, password check
+int checkTCViewUser(char *user, char *pass)
+{
+	admis t;
+    ifstream fin("tcview.txt");
+    if(!fin)
+    {
+        cout<<"File not Open";
+        getch();
+         return 0;
+    }     
+
+    char username[50], password[50], line[500];
+
+    while(fin.getline(line,500))
+    {
+        sscanf(line,
+        "%ld|%d|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%s",
+        &t.tcno,
+        &t.SRno,
+        &t.clas,
+        &t.section,
+        &t.Rollno,
+        t.name,
+        t.Fname,
+        t.mname,
+        t.dob,
+        t.phone_no,
+        t.Aadhaar,
+        t.gender,
+        t.category,
+        t.email,
+        t.address,
+        t.bg,
+        t.username,
+        t.password
+        );
+
+        if(strcmp(t.username,user)==0 && strcmp(t.password,pass)==0)
+        {
+            fin.close();
+            return 1;
+        }
+    }
+    fin.close();
+    return 0;
+}
+
+
+void admissionStudent()
+{
+    admis s;
+label:
+    clrscr();
+    // last login read from demo.txt
+ifstream dfin("demo.txt");
+if(!dfin)
+{
+    cout<<"Please login first!";
+    getch();
+    return;
+}
+dfin >> s.username >> s.password;
+dfin.close();
+
+	if( checkStudentUser(s.username,s.password) ||
+	    checkTCRequestUser(s.username,s.password) ||
+	    checkTCViewUser(s.username,s.password) )
+	    {
+		cout<<"\nNO ADMISSION!";
+		cout<<"\nUser already exists.";
+		getch();
+		return;
+	    }
+
+
+    cout<<"Enter Class (1-12): ";
+    cin>>s.clas;
+
+    if(s.clas < 1 || s.clas > 12)
+    {
+	cout<<"Invalid Class";
+	getch();
+	goto label;
+    }
+
+labels:
+    cout<<"Enter Section (A/B/C): ";
+    cin>>s.section;
+
+    if(s.section!='A' && s.section!='B' && s.section!='C')
+    {
+	cout<<"Invalid Section";
+	getch();
+	goto labels;
+    }
+
+    //  Automatic numbers
+    s.Rollno = getRoll(s.clas, s.section);
+    s.SRno   = getSR();
+
+    cout<<"Auto Roll No : "<<s.Rollno<<endl;
+    cout<<"Auto SR No   : "<<s.SRno<<endl;
+
+    cin.ignore(100,'\n');
+
+cout<<"Enter Name: ";
+
+fflush(stdin);
+    cin.getline(s.name, 100);
+
+
+cout<<"Enter Father Name: ";
+cin.getline(s.Fname,100);
+
+cout<<"Enter Mother Name: ";
+cin.getline(s.mname,100);
+
+
+    cout<<"Enter DOB( DD/MM/YYYY ): ";
+    cin>>s.dob;
+
+    //Phone NO
+     ph:
+    cout<<"Enter Phone No: ";
+    cin>>s.phone_no;
+    if(strlen(s.phone_no) != 10)
+{
+    cout<<"INVALID Phone No";
+    goto ph;
+}
+
+			    //Aadhaar No
+    ad:
+    m:
+cout<<"Enter Aadhaar No: ";
+cin>>s.Aadhaar;
+if(strlen(s.Aadhaar) != 12)
+{
+    cout<<"Invalid Aadhaar\n";
+    goto ad;
+}
+
+
+		if(checkaadhaar(s.Aadhaar))
+	    {
+		cout<<"\nInvalid Aadhaar card number";
+		cout<<"\nUser Aadhar number already exists.\n";
+		getch();
+		goto m;
+	    }
+
+    cout<<"Enter Gender: ";
+    cin>>s.gender;
+
+    cout<<"Enter Blood Group: ";
+    cin>>s.bg;
+
+		//General
+	 gen:
+    cout<<"Enter Category (General/OBC/SC/ST): ";
+   cin >> s.category;
+
+if(strcmp(s.category,"General")!=0 && strcmp(s.category,"OBC")!=0 && strcmp(s.category,"SC")!=0 && strcmp(s.category,"ST")!=0)
+   {
+	cout<<"Ivalid value";
+	goto gen;
+   }
+
+em:
+    cout<<"Enter Email: ";
+    cin>>s.email;
+	if(!validEmail(s.email))
+	{
+    cout<<"Invalid Email";
+    goto em;
+	}
+
+
+    cout<<"Enter Address: ";
+	cin.ignore();
+	cin.getline(s.address,100);
+
+
+
+    // save in file (TXT)
+    ofstream fout("student.txt", ios::app);
+	if(!fout)
+	{
+    cout<<"File Error!";
+    getch();
+    return;
+	}
+fout << s.SRno << "|"
+     << s.clas << "|"
+     << s.section << "|"
+     << s.Rollno << "|"
+     << s.name << "|"
+     << s.Fname << "|"
+     << s.mname << "|"
+     << s.dob << "|"
+     << s.phone_no << "|"
+     << s.Aadhaar << "|"
+     << s.gender << "|"
+     << s.category << "|"
+     << s.email << "|"
+     << s.address << "|"
+     << s.bg << "|"
+     << s.username << "|"
+     << s.password << "\n";
+
+
+    fout.close();
+
+    cout<<"Admission Successful!";
+    getch();
+}
+
+	
+void search_profileData()
+{
+    admis s;
+    char u[50], p[50];
+    char line[500];
+    int found = 0;
+
+    clrscr();
+
+    // demo.txt read kar raha hai  username ,password
+    ifstream dfin("demo.txt");
+    if(!dfin)
+    {
+        cout<<"Please login first!";
+        getch();
+        return;
+    }
+    dfin >> u >> p;
+    dfin.close();
+
+    
+    ifstream fin("student.txt");
+    if(!fin)
+    {
+        cout<<"Student file not found!";
+	getch();
+	return;
+    }
+
+    cout<<"\n\t--------- MY PROFILE ---------\n\n";
+
+    while(fin.getline(line,500))
+    {
+	sscanf(line,
+	"%d|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]",
+	&s.SRno,&s.clas,&s.section,&s.Rollno,
+	s.name,s.Fname,s.mname,s.dob,s.phone_no,
+	s.Aadhaar,s.gender,s.category,
+	s.email,s.address,s.bg,
+	s.username,s.password);
+
+
+	if(strcmp(s.username,u)==0 && strcmp(s.password,p)==0)
+	{
+	    found = 1;
+
+	    cout<<"\tSR No      : "<<s.SRno<<endl;
+	    cout<<"\tClass      : "<<s.clas<<" "<<s.section<<endl;
+	    cout<<"\tRoll No    : "<<s.Rollno<<endl;
+	    cout<<"\tName       : "<<s.name<<endl;
+	    cout<<"\tFather     : "<<s.Fname<<endl;
+	    cout<<"\tMother     : "<<s.mname<<endl;
+	    cout<<"\tDOB        : "<<s.dob<<endl;
+	    cout<<"\tPhone      : "<<s.phone_no<<endl;
+	    cout<<"\tAadhaar    : "<<s.Aadhaar<<endl;
+	    cout<<"\tGender     : "<<s.gender<<endl;
+	    cout<<"\tCategory   : "<<s.category<<endl;
+	    cout<<"\tEmail      : "<<s.email<<endl;
+	    cout<<"\tAddress    : "<<s.address<<endl;
+	    cout<<"\tBlood Group: "<<s.bg<<endl;
+	    cout<<"\t----------------------------------\n";
+            break;
+        }
+    }
+
+    if(!found)
+        cout<<"Profile not found!";
+
+    fin.close();
+    getch();
+}
+
+
+void showMarksheet()
+{
+    admis s;
+    int sr;
+    int  foundS = 0, foundM = 0;
+    char user[100],pass[100];
+    char line[500];
+    float marks[5], total, per;
+    int clas, i;
+    char u[100],p[100];
+
+    clrscr();
+
+    ifstream dfin("demo.txt");
+if(!dfin)
+{
+    cout<<"Please login first!";
+    getch();
+    return;
+}
+dfin >> s.username >> s.password;
+strcpy(u, s.username);
+strcpy(p, s.password);
+
+dfin.close();
+
+
+    /* -------- STUDENT FILE -------- */
+    ifstream fs("student.txt");
+
+    while(fs.getline(line,400))
+    {
+	sscanf(line,
+	"%d|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]",
+	&s.SRno,&s.clas,&s.section,&s.Rollno,
+	s.name,s.Fname,s.mname,s.dob,s.phone_no,
+	s.Aadhaar,s.gender,s.category,
+	s.email,s.address,s.bg,
+	s.username,s.password);
+
+	if(strcmp(s.username,u)==0 && strcmp(s.password,p)==0)
+	{
+	    foundS = 1;
+	    clas = s.clas;
+	    break;
+	}
+    }
+    fs.close();
+
+    if(!foundS)
+    {
+	cout<<"Student Record Not Found!";
+	getch();
+	return;
+    }
+
+    /* -------- MARKSHEET FILE -------- */
+    ifstream fm("marksheet.txt");
+        if(!fm)
+{
+    cout<<"Marksheet file error!";
+    getch();
+    return;
+}
+
+    while(fm.getline(line,400))
+    {
+	sscanf(line,
+"%d|%d|%f|%f|%f|%f|%f|%f|%f|%[^|]|%[^|]",
+&sr,&clas,
+&marks[0], &marks[1], &marks[2], &marks[3], &marks[4],
+&total,&per,
+user,pass);
+
+        
+
+	if(strcmp(user,u)==0 && strcmp(pass,p)==0)
+{
+    foundM = 1;
+    s.SRno = sr;   
+    break;
+}
+
+    }
+    fm.close();
+
+    if(!foundM)
+    {
+	cout<<"Marksheet Not Found!";
+	getch();
+	return;
+    }
+
+
+    clrscr();
+
+        total=0;
+	       
+	       printf("\n\n\n\n\n\n\n");
+	       printf("                *************************************************\n");
+	       printf("               (<-------------STAR INFOTECH COLLEGE------------->)\n");
+	       printf("                *************************************************\n");
+	       printf("                |       SR No   : %-10d                    |\n", s.SRno);
+	       printf("                |       Name    : %-20s          |\n", s.name);
+	       printf("                |       Father  : %-20s          |\n", s.Fname);
+	       printf("                |       Mother  : %-20s          |\n", s.mname);
+	       printf("               (<---------------Subjects Marks------------------>)\n");
+
+	       for (i = 0; i < 5; i++) {
+	       printf("                |        Subject %d: %.2f                       |\n", i + 1, marks[i]);
+	       total += marks[i];
+	       }
+
+	       per = total / 5;
+	       printf("                |          TOTAL  : %.2f                      |\n", total);
+	       printf("                -------------------------------------------------\n");
+	       printf("                |        Percentage: %.2f%%                     |\n", per);
+	       if (per >= 33)
+	       printf("                |        RESULT :PASS                           |\n");
+	       else
+	       printf("                |        RESULT :FAIL                           |\n");
+	       printf("                -------------------------------------------------\n");
+
+
+
+    getch();
+}
+
+
+};
+
+void users()
+{
+admis k;
+     while(1)
+     {
+     int y;
+     clrscr();
+
+cout<<"\t***************************************************************\n";
+cout<<"\t*                                                             *\n";
+cout<<"\t*                     STUDENT PORTAL                          *\n";
+cout<<"\t*                                                             *\n";
+cout<<"\t***************************************************************\n\n";
+
+
+	 cout<<"\t\t1. New Admission\n";
+	 cout<<"\t\t2. My Records\n";
+	 cout<<"\t\t3. Transfer Certificate(TC)\n";
+	 cout<<"\t\t4. Exit\n\n";
+	 cout<<"\t\t  Select an Action:- ";
+	 cin>>y;
+	 if(y==4)
+	    return;
+
+	 switch(y)
+	 {
+	      case 1:
+		      k.admissionStudent();
+	      break;
+	      case 2:
+		      while(1)
+		      {
+			  int h;
+			  clrscr();
+	      cout<<"\t===============================================================\n";
+	      cout<<"\t<--------------------STUDENT RECORDS MENU--------------------->\n";
+	      cout<<"\t===============================================================\n\n";
+
+			  cout<<"\t\t1. Student Profile\n";
+			  cout<<"\t\t2. Marksheet\n";
+			  cout<<"\t\t3. Back\n\n";
+			  cout<<"\t\t  Select an Action:- ";
+			  cin>>h;
+
+			  if(h==3)
+			      break;
+
+			  switch(h)
+			 {
+			     case 1:
+				    k.search_profileData();
+			     break;
+			     case 2:
+				    k.showMarksheet();
+			     break;
+			     default:
+			     cout<<"INVALID VALUE";
+			     break;
+			 }
+
+
+		      }
+	      break;
+	      case 3:
+		    usertc();
+	      break;
+	      default:
+	      cout<<"INVALID VALUE";
+	      break;
+
+	 }
+     }
+
+getch();
+}

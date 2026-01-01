@@ -1,0 +1,3 @@
+107|4|2|A|1001|priya|prabhu singh|Jatan|9/3/2002|1234567898|123456789778|male|OBC|priya123@gmail.com|Ajmer|A+|priya|12345
+109|5|1|B|1001|Pawan singh|Vijay singh|puja |12/2/2004|1234567868|123456789233|male|OBC|pawan123@gmail.com|Ajmer|o+|pawan|12345
+110|5|2|A|1001|vijay|pawam|puja|9/12/2006|1234567891|123456789122|male|OBC|vijay123@gmail.com|ajmer|o-|vijay|12345

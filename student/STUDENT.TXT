@@ -1,0 +1,5 @@
+2|1|A|1002|Hemant singh|Prabhu singh|Jatan|9/12/2006|1234567891|123456789012|male|OBC|singhhemant2945@gmail.com|ajmer|o-|Hemant|12345
+3|1|A|1003|Goutam kumar|Rahul kumar|Ira kumar|2/1/2007|1234567892|234567890123|male|OBC|Goutam132@gmail.com|Kundan nagar Ajmer|o-|goutam|123
+4|1|A|1001|danish saiyed|imtiyaj ali|badrunisha|17/09/2006|7023959448|213321342134|male|OBC|danishsaiyed487@gmail.com|phuliya kalan,()|O-|danish|12345
+6|2|A|1001|vijay|pawam|puja|9/12/2006|1234567891|123456789122|male|OBC|vijay123@gmail.com|ajmer|o-|hemant|12345
+7|3|A|1001|ramesh|vijay singh|manisha|9/12/2007|1234567891|123456789999|male|General|ramesh123@gmail.com|Ajmer|o-|ramesh|12345

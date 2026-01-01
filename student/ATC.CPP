@@ -1,0 +1,518 @@
+#include<iostream.h>
+#include<conio.h>
+#include<string.h>
+#include<fstream.h>
+#include<dos.h>
+#include<stdio.h> // printf ke liye zaruri hai
+
+class issue
+{
+     long int Rollno,TCno,tcno;
+      char phone_no[100],Aadhaar[100];
+      char name[100],Fname[100],mname[100],dob[100],address[100],email[100];
+      char bg[100];
+      char gender[100], category[100],section;
+      int SRno,clas;
+      char username[100],password[100];
+   public:
+   
+   
+   void showTCRequest()
+{
+    issue s;
+    char line[500];
+    int found = 0;
+
+    ifstream fin("tcrequest.txt");
+    if (!fin)
+    {
+        cout << "File not found!";
+        getch();
+        return;
+    }
+
+    clrscr();
+    cout << "-------------------------------------------------------------------------------\n";
+    printf("| %-5s | %-6s | %-6s | %-3s | %-10s | %-10s | %-11s |\n",
+           "TCNO", "SRNO", "CLASS", "SEC", "NAME", "FATHER", "PHONE");
+    cout << "-------------------------------------------------------------------------------\n";
+
+    while (fin.getline(line, 500))
+    {
+        sscanf(line,
+        "%ld|%d|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]",
+        &s.tcno,&s.SRno,&s.clas,&s.section,&s.Rollno,
+        s.name,s.Fname,s.mname,s.dob,s.phone_no,
+        s.Aadhaar,s.gender,s.category,
+        s.email,s.address,s.bg,
+        s.username);
+
+        found = 1;
+
+        printf("| %-5ld | %-6d | %-6d | %-3c | %-10.10s | %-10.10s | %-11.11s |\n",
+               s.tcno, s.SRno, s.clas, s.section, s.name, s.Fname, s.phone_no);
+    }
+
+    cout << "-------------------------------------------------------------------------------\n";
+    fin.close();
+
+    if (!found)
+    {
+        cout << "No Record Found";
+        getch();
+        return;
+    }
+
+    char l[10];
+    cout << "\nNOTE:- Do you want to approve this TC request? YES/NO : ";
+    cin >> l;
+
+    if (strcmpi(l, "YES") == 0)
+       {
+        long int tc_input;
+        cout << "Enter TC Number: ";
+        cin >> tc_input;
+
+        int sr_found = 0;
+
+
+        fin.open("tcrequest.txt");
+        while (fin.getline(line, 500))
+        {
+            sscanf(line,"%ld|%d",&s.tcno,&s.SRno);
+            if (s.tcno == tc_input)
+            {
+                sr_found = s.SRno;
+                break;
+            }
+        }
+        fin.close();
+
+        if (sr_found != 0)
+        {
+            addview(tc_input);
+            delete_requestData(tc_input);
+            Delete_Marksheet(sr_found);
+        }
+        else
+        {
+            cout << "\nTC Number Not Found!";
+        }
+    }
+
+    getch();
+}
+
+
+	
+void addview(long int tcno_arg)
+{
+    issue s;
+    char line[500];
+    int found = 0;
+
+    ifstream fin("tcrequest.txt");
+    ofstream fout("tcview.txt", ios::app);
+
+    if(!fin || !fout)
+    {
+        cout<<"File Error!";
+        getch();
+        return;
+    }
+
+    while(fin.getline(line,500))
+    {
+	// only read TCNO
+        sscanf(line, "%ld|", &s.tcno);
+
+        if(s.tcno == tcno_arg)
+        {
+            fout << line << endl;   // full record copy
+            found = 1;
+            break;
+        }
+    }
+
+    fin.close();
+    fout.close();
+
+    if(found)
+        cout<<"\nTC View data saved successfully!";
+    else
+        cout<<"\nTCNO Not Found!";
+}
+
+void delete_requestData(long int tcno_arg)
+{
+    issue s;
+    char line[500];
+    int found = 0;
+
+    ifstream fin("tcrequest.txt");
+    ofstream fout("temp.txt");
+
+    if(!fin || !fout)
+    {
+        cout<<"TC request file error!";
+        getch();
+        return;
+    }
+
+    while(fin.getline(line,500))
+    {
+	// only read TCNO
+        sscanf(line, "%ld|", &s.tcno);
+
+        if(s.tcno == tcno_arg)
+        {
+	    found = 1;
+        }
+        else
+        {
+            fout << line << endl;
+        }
+    }
+
+    fin.close();
+    fout.close();
+
+    remove("tcrequest.txt");
+    rename("temp.txt","tcrequest.txt");
+
+    if(found)
+        cout<<"\nTC Request Deleted Successfully!";
+    else
+        cout<<"\nTC Number Not Found!";
+
+    getch();
+}
+
+void showTCview()
+{
+    issue t;
+    char line[400];
+    int found = 0;
+
+    ifstream fin("tcview.txt");
+    if(!fin)
+    {
+        cout<<"File not found!";
+        getch();
+        return;
+    }
+
+    clrscr();
+    cout<<"-------------------------------------------------------------------------------\n";
+    printf("| %-5s | %-6s | %-6s | %-3s | %-15s | %-10s | %-11s |\n",
+           "TCNO","SRNO","CLASS","SEC","NAME","FATHER","PHONE");
+    cout<<"-------------------------------------------------------------------------------\n";
+
+    while(fin.getline(line,400))
+    {
+        sscanf(line,
+        "%ld|%d|%d|%c|%*[^|]|%[^|]|%[^|]|%*[^|]|%*[^|]|%[^|]",
+        &t.tcno,
+        &t.SRno,
+        &t.clas,
+        &t.section,
+        t.name,
+        t.Fname,
+        t.phone_no);
+
+        found = 1;
+
+        printf("| %-5ld | %-6d | %-6d | %-3c | %-15.15s | %-10.10s | %-11.11s |\n",
+               t.tcno, t.SRno, t.clas, t.section, t.name, t.Fname, t.phone_no);
+    }
+
+    cout<<"-------------------------------------------------------------------------------\n";
+
+    if(!found)
+        cout<<"No Record Found";
+
+    fin.close();
+    getch();
+}
+
+
+void Delete_Marksheet(int x)
+{
+    ifstream fin("marksheet.txt");
+    ofstream fout("temp.txt");
+
+    if(!fin || !fout)
+    {
+        cout<<"File error!";
+        getch();
+        return;
+    }
+
+    int file_sr;
+    int found = 0;
+    char line[300];
+
+    clrscr();
+
+    while(fin.getline(line,300))
+    {
+        if(sscanf(line,"%d|",&file_sr)!=1)
+            continue;
+
+        if(file_sr != x)
+            fout << line << endl;
+        else
+            found = 1;
+    }
+
+    fin.close();
+    fout.close();
+
+    remove("marksheet.txt");
+    rename("temp.txt","marksheet.txt");
+
+    if(found)
+        cout<<"\nMarksheet Deleted Successfully!";
+    else
+        cout<<"\nMarksheet Not Found!";
+
+    getch();
+}
+
+
+
+//TC dana wala function 
+  int getTCno()
+{
+    ifstream fin("TCnumber.txt");
+    int lastTC = 100;   // starting se pehla TC 101 hoga
+
+    if(fin)
+    {
+        fin >> lastTC;
+        fin.close();
+    }
+
+    int newTC = lastTC + 1;
+
+    ofstream fout("TCnumber.txt");
+    fout << newTC;
+    fout.close();
+
+    return newTC;
+}
+void tcissue()
+{
+    issue s;
+    char line[400];
+    int sr, found = 0;
+    char ch[100];
+
+    clrscr();
+    cout<<"Enter SR No: ";
+    cin>>sr;
+
+    ifstream fin("student.txt");
+    if(!fin)
+    {
+        cout<<"File Error!";
+        getch();
+        return;
+    }
+
+    while(fin.getline(line,400))
+    {
+        sscanf(line,
+        "%d|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]",
+        &s.SRno,&s.clas,&s.section,&s.Rollno,
+        s.name,s.Fname,s.mname,s.dob,
+        s.phone_no,s.Aadhaar,s.gender,
+        s.category,s.email,s.address,s.bg);
+
+        if(s.SRno == sr)
+        {
+            found = 1;
+	     clrscr();
+         cout<<"\t\t----- Student Search Result -----\n\n";
+	    cout<<"\t\tSR No      : "<<s.SRno<<endl;
+	    cout<<"\t\tRoll No    : "<<s.Rollno<<endl;
+	    cout<<"\t\tName       : "<<s.name<<endl;
+	    cout<<"\t\tFather     : "<<s.Fname<<endl;
+	    cout<<"\t\tMother     : "<<s.mname<<endl;
+	    cout<<"\t\tDOB        : "<<s.dob<<endl;
+	    cout<<"\t\tPhone      : "<<s.phone_no<<endl;
+	    cout<<"\t\tAadhaar    : "<<s.Aadhaar<<endl;
+	    cout<<"\t\tGender     : "<<s.gender<<endl;
+	    cout<<"\t\tCategory   : "<<s.category<<endl;
+	    cout<<"\t\tEmail      : "<<s.email<<endl;
+	    cout<<"\t\tAddress    : "<<s.address<<endl;
+	    cout<<"\t\tBlood Group: "<<s.bg<<endl;
+	    cout<<"\t----------------------------------------------------------\n";
+
+
+	    cout << "\n\nNOTE:- Do you want to Issue a Transfer Certificate(TC) to this student (YES/NO): ";
+		cin>>ch;
+
+	if(strcmp(ch,"YES")==0 || strcmp(ch,"yes")==0)
+	    {
+                addview(sr);
+                delete_studentData(sr);
+                Delete_Marksheet(sr);
+            }
+            break;
+        }
+    }
+
+    fin.close();
+
+    if(!found)
+        cout<<"\nRecord Not Found!";
+
+    getch();
+}
+
+ 
+ void addview(int x)
+ {
+   
+    issue s;
+    int found=0;
+   char line[400];
+    s.tcno=getTCno();
+       ifstream fin("student.txt");
+       ofstream fout("tcview.txt",ios::app);
+
+	if(!fin || !fout)
+	{
+	   cout<<"File error";
+	   getch();
+	   return;
+	}
+    clrscr();
+
+    while(fin.getline(line,400))
+    {
+	sscanf(line,
+        "%d|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]",
+        &s.SRno,&s.clas,&s.section,&s.Rollno,
+        s.name,s.Fname,s.mname,s.dob,s.phone_no,
+        s.Aadhaar,s.gender,s.category,
+        s.email,s.address,s.bg,
+        s.username,s.password);
+
+	if(s.SRno==x)
+	{
+	    found=1;
+
+	     fout <<s.tcno  <<"|"
+		  << s.SRno << "|"
+		  << s.clas << "|"
+		  << s.section << "|"
+		  << s.Rollno << "|"
+		  << s.name << "|"
+		  << s.Fname << "|"
+		  << s.mname << "|"
+		  << s.dob << "|"
+		  << s.phone_no << "|"
+		  << s.Aadhaar << "|"
+		  << s.gender << "|"
+		  << s.category << "|"
+		  << s.email << "|"
+		  << s.address << "|"
+		  << s.bg << "|" 
+		  << s.username << "|" << s.password << "\n";
+
+		  break;
+	   }
+     }
+     fin.close();
+     fout.close();
+     if(found)
+     {
+     cout<<"\n TC View Added SuccessFully!";
+     }
+     else
+     {
+       cout<<"\n Student Not Found !";
+     }
+   getch();
+ }
+void delete_studentData(int x)
+{
+    issue s;
+    int  found=0;
+    char  line[400];
+
+    clrscr();
+    ifstream fin("student.txt");
+    ofstream fout("temp.txt");
+
+	 if(!fin || !fout)
+    {
+        cout<<"File error!";
+        getch();
+        return;
+    }
+    while(fin.getline(line,400))
+    {
+	sscanf(line,
+        "%d|%d|%c|%ld|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]|%[^|]",
+        &s.SRno,&s.clas,&s.section,&s.Rollno,
+        s.name,s.Fname,s.mname,s.dob,s.phone_no,
+        s.Aadhaar,s.gender,s.category,
+        s.email,s.address,s.bg,
+        s.username,s.password);
+
+	if(s.SRno==x)
+	 found=1;
+	else
+	 fout<<line<<"\n";
+    }
+    fin.close(); fout.close();
+    remove("student.txt");
+    rename("temp.txt","student.txt");
+
+    if(found) cout<<"\nStudent Record Deleted!";
+    else cout<<"\nRecord Not Found!";
+    getch();
+} 
+
+
+
+};
+void AdminTc()
+{
+	issue k;
+	  while(1){
+	       int y;
+		      clrscr();
+	  cout<<"\t===============================================================\n";
+	  cout<<"\t          TRANSFER CERTIFICATE MANAGEMENT (ADMIN)\n";
+	  cout<<"\t===============================================================\n\n\n\n";
+		     cout<<"\t\t1. Issue Student TC\n";
+		     cout<<"\t\t2. View Issue TCs\n";
+		     cout<<"\t\t3. Issue transfer Certificate\n";
+		     cout<<"\t\t4. Back\n";
+		     cout<<"\t\tSelect an Action:- ";
+		     cin>>y;
+		     if(y==4)
+			return;
+		       switch(y)
+		       {
+			     case 1:
+			     k.showTCRequest();
+			     break;
+			     case 2:
+			     k.showTCview();
+			     break;
+			      case 3:
+				 k.tcissue();
+			     break;
+			     default:
+			     cout<<"INvalid Value";
+			     break;
+		       }
+		       }
+  getch();
+
+}
